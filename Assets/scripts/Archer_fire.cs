@@ -41,18 +41,34 @@ public class Archer_fire : MonoBehaviour
                 {
 
                     timer = 0;
-                    if (transform.gameObject.GetComponent<Attacking>().targets[0].transform.GetComponent<unit_properties>().type == "Obstacle")
+                    var currentTarget = transform.gameObject.GetComponent<Attacking>().targets[0];
+
+                    // Instantiate the projectile and configure its trajectory
+                    GameObject projInstance = Instantiate(projectile, transform.position, transform.rotation);
+
+                    // New parabolic movement using projectile1 (movement-only script)
+                    var proj1 = projInstance.GetComponent<projectile1>();
+                    if (proj1 != null)
                     {
-                        int i = 1;
-                        
-                        projectile.GetComponent<projectile1>().target = transform.gameObject.GetComponent<Attacking>().targets[0];
+                        proj1.target = currentTarget.gameObject;
+                        proj1.firePoint = transform;
                     }
-                    else
+
+                    // Optional: support ArrowProjectile if that script is present on the prefab
+                    var arrow = projInstance.GetComponent<ArrowProjectile>();
+                    if (arrow != null)
                     {
-                        projectile.GetComponent<projectile1>().target = transform.gameObject.GetComponent<Attacking>().targets[0];
+                        arrow.target = currentTarget.transform;
+                        arrow.firePoint = transform;
+
+                        // Optional: set projectile "type" based on this unit's faction
+                        var props = GetComponent<unit_properties>();
+                        if (props != null)
+                        {
+                            // Friendly archers shoot "Friendly" arrows, enemies shoot "Enemy" arrows
+                            arrow.type = props.faction;
+                        }
                     }
-                   
-                    Instantiate(projectile, transform.position, transform.rotation);
 
 
 

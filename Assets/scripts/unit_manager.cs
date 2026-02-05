@@ -45,7 +45,7 @@ public class unit_manager : MonoBehaviour
 
     public Camera cam;
     Vector3 mp;
-    bool isdragging = false;
+    public bool isdragging = false;
     private RaycastHit hit1, hit2;
     public bool flag, ordered, reached;
     public GameObject Destination, start;
@@ -64,6 +64,9 @@ public class unit_manager : MonoBehaviour
     public GameObject Spear_Pref;//prefabs
     public GameObject Archer_Pref;
 
+    // Formation control
+    public FormationController formationController;
+
     //drag select//
     private void OnGUI()
     {
@@ -78,8 +81,11 @@ public class unit_manager : MonoBehaviour
     }
     private bool IsWithinSelectionBounds(Transform transform)
     {
+        // Use the same camera reference that is used for raycasts / gameplay,
+        // instead of relying on Camera.main (which may be a different camera or null)
+        var camera = cam != null ? cam : Camera.main;
+        if (camera == null) return false;
 
-        var camera = Camera.main;
         var viewportBounds = ScreenHelper.GetViewportBounds(camera, mp, Input.mousePosition);
         return viewportBounds.Contains(camera.WorldToViewportPoint(transform.position));
     }
@@ -111,6 +117,11 @@ public class unit_manager : MonoBehaviour
         foreach(var s in FindObjectsOfType<Spawner_Properties>())
         {
             spawnList.Add(s.gameObject);
+        }
+        // Auto-find FormationController if not wired in the Inspector
+        if (formationController == null)
+        {
+            formationController = FindObjectOfType<FormationController>();
         }
         if (Spearmen > 0)
         {
@@ -190,12 +201,12 @@ public class unit_manager : MonoBehaviour
         reached = false;
         ordered = false;
         flag = false;
-        //friendly
-        string F_path = "D:/new unity project/RTS_Project/Assets/Unit_Types/F_Unit_Types.txt";
+        //friendly - use paths relative to the current project instead of hard-coded absolute paths
+        string F_path = Path.Combine(Application.dataPath, "Unit_Types", "F_Unit_Types.txt");
         fileLinesF = File.ReadAllLines(F_path).ToList();
-        F_path = "D:/new unity project/RTS_Project/Assets/Unit_Types/Melee_FUnits.txt";
+        F_path = Path.Combine(Application.dataPath, "Unit_Types", "Melee_FUnits.txt");
         FMU = File.ReadAllLines(F_path).ToList();
-        F_path = "D:/new unity project/RTS_Project/Assets/Unit_Types/Ranged_FUnits.txt";
+        F_path = Path.Combine(Application.dataPath, "Unit_Types", "Ranged_FUnits.txt");
         FRU = File.ReadAllLines(F_path).ToList();
         foreach (var s in FindObjectsOfType<NavMeshAgent>())
         {
@@ -209,11 +220,11 @@ public class unit_manager : MonoBehaviour
             }
         }
         //enemy
-        string E_path = "D:/new unity project/RTS_Project/Assets/Unit_Types/E_Unit_Types.txt";
+        string E_path = Path.Combine(Application.dataPath, "Unit_Types", "E_Unit_Types.txt");
         fileLinesE = File.ReadAllLines(E_path).ToList();
-        E_path = "D:/new unity project/RTS_Project/Assets/Unit_Types/Melee_EUnits.txt";
+        E_path = Path.Combine(Application.dataPath, "Unit_Types", "Melee_EUnits.txt");
         EMU = File.ReadAllLines(E_path).ToList();
-        E_path = "D:/new unity project/RTS_Project/Assets/Unit_Types/Ranged_EUnits.txt";
+        E_path = Path.Combine(Application.dataPath, "Unit_Types", "Ranged_EUnits.txt");
         ERU = File.ReadAllLines(E_path).ToList();
         foreach (var s in FindObjectsOfType<NavMeshAgent>())
         {
@@ -372,13 +383,28 @@ public class unit_manager : MonoBehaviour
                     Destination.transform.position = hit2.point;
                     if (us.Count > 0)
                     {
+                        // Mark selected units as ordered
                         for (int i = 0; i < us.Count; i++)
                         {
                             us[i].GetComponent<unit_properties>().ordered = true;//!
-                            Formation(un_count, hit2.point, us[i].GetComponent<NavMeshAgent>());
-                            un_count++;
                         }
-                        un_count = 0;
+
+                        // Use FormationController's current formation (default: loose box)
+                        // so that movement keeps the last chosen formation.
+                        if (formationController != null)
+                        {
+                            formationController.ApplyCurrentFormationAt(hit2.point);
+                        }
+                        else
+                        {
+                            // Fallback to legacy per-index formation if controller is missing
+                            for (int i = 0; i < us.Count; i++)
+                            {
+                                Formation(un_count, hit2.point, us[i].GetComponent<NavMeshAgent>());
+                                un_count++;
+                            }
+                            un_count = 0;
+                        }
                     }
                 }
             }
@@ -391,30 +417,27 @@ public class unit_manager : MonoBehaviour
         //Drag n Select//
         if (Input.GetMouseButtonUp(0))
         {
-            foreach (var SelectableObject in FindObjectsOfType<NavMeshAgent>())
+            // When releasing the left mouse button, select all friendly, alive units
+            // whose screen position lies within the drag rectangle.
+            foreach (var agent in FindObjectsOfType<NavMeshAgent>())
             {
+                var props = agent.gameObject.GetComponent<unit_properties>();
+                if (props == null) continue;
 
+                // Only select player's units
+                if (props.faction != "Friendly") continue;
 
-                for (int i = 0; i < fileLinesF.Count; i++)
+                // Only select alive units
+                if (props.HP <= 0) continue;
+
+                if (IsWithinSelectionBounds(agent.transform))
                 {
-                    if (SelectableObject.gameObject.GetComponent<unit_properties>().type == fileLinesF[i])
-                    {
-                        if (SelectableObject.gameObject.GetComponent<unit_properties>().HP > 0)
-                        {
-                            if (IsWithinSelectionBounds(SelectableObject.transform))
-                            {
-
-                                AddToList(SelectableObject.gameObject, true);
-                                SelectableObject.GetComponent<unit_properties>().highlight.SetActive(true);
-                            }
-
-                        }
-                    }
+                    AddToList(agent.gameObject, true);
+                    props.highlight.SetActive(true);
                 }
-                isdragging = false;
-
             }
 
+            isdragging = false;
         }
 
 

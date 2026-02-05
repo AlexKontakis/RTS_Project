@@ -5,6 +5,7 @@ using UnityEngine;
 public class toggle_cam_controller : MonoBehaviour
 {
     public int i;
+    public bool cam_enabled = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,10 +21,12 @@ public class toggle_cam_controller : MonoBehaviour
             if(i == 1)
             {
                 transform.GetComponent<cam_manager>().enabled = false;
+                cam_enabled = false;
             }
             else
             {
                 transform.GetComponent<cam_manager>().enabled = true;
+                cam_enabled = true;
                 i = 0;
             }
         }

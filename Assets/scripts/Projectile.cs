@@ -7,6 +7,7 @@ public class Projectile : MonoBehaviour
     public int DMG,lifetime;
     public float timer;
     public string type;
+    public bool hasHit;
     void Start()
     {
         timer = 0;
@@ -40,6 +41,7 @@ public class Projectile : MonoBehaviour
             {
                 if (other.gameObject.GetComponent<unit_properties>().faction == "Enemy")
                 {
+                    hasHit = true;
                     other.gameObject.GetComponent<unit_properties>().HP -= DMG;
                     transform.gameObject.GetComponent<projectile1>().enabled = false;
                     transform.gameObject.GetComponent<Rigidbody>().isKinematic = true;

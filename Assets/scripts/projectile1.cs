@@ -4,117 +4,96 @@ using UnityEngine;
 
 public class projectile1 : MonoBehaviour
 {
-    public float _InitialVelocity;
-    public float _Angle;
-    public Transform _FirePoint;
-    public float _Height;
-    private Camera cam;
-    public List<GameObject> shooters = new List<GameObject>();
+    // Optional explicit fire point (e.g. bow). If null, the projectile's current position is used.
+    public Transform firePoint;
+
+    // Target to shoot at (set from Archer_fire before instantiation)
     public GameObject target;
-    public Vector3 target_pos;
-    public float dis;
-    public float time_update;
+
+    // How long (in seconds) the projectile takes to travel from start to target.
+    public float flightDuration = 1.0f;
+
+    // Maximum vertical height (relative to straight line) of the arc.
+    public float arcHeight = 2.0f;
+
+    // Optional safety lifetime (seconds) before the projectile is destroyed.
+    public float maxLifetime = 5.0f;
+
+    private Vector3 _startPos;
+    private Vector3 _targetPos;
+    private float _t; // 0 → 1 over the course of the flight
+    private float _lifeTimer;
+    private Rigidbody _rb;
+
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+        if (_rb != null)
+        {
+            // We move manually, so disable physical forces.
+            _rb.useGravity = true;
+            _rb.isKinematic = false;
+        }
+    }
 
     private void Start()
     {
-        foreach(var s in FindObjectsOfType<Archer_fire>())
+        // Determine start position (match ArrowProjectile behaviour)
+        _startPos = firePoint != null ? firePoint.position : transform.position;
+
+        // Snapshot the target position at fire time so the projectile flies
+        // along a clean arc instead of constantly chasing a moving target.
+        if (target != null)
         {
-            shooters.Add(s.gameObject);
+            _targetPos = target.transform.position;
         }
-        float min = 0;
-        int minshooter = 0;
-        for(int i = 0; i < shooters.Count; i++)
+        else
         {
-            if(i == 0)
-            {
-                min = (transform.position - shooters[i].transform.position).magnitude;
-                minshooter = i;
-              
-            }
-            else
-            {
-                if((transform.position - shooters[i].transform.position).magnitude < min)
-                {
-                    min = (transform.position - shooters[i].transform.position).magnitude;
-                    minshooter = i;
-                }
-            }
+            // Fallback: shoot forward a bit if no target is provided
+            _targetPos = _startPos + transform.forward * 10f;
         }
-        _FirePoint = shooters[minshooter].transform;
-       
-        target_pos = target.transform.position;
-        Vector3 direction = target_pos - _FirePoint.position;
-        Vector3 groundDirection = new Vector3(direction.x, 0, direction.z);
-        dis = (transform.position - target_pos).magnitude;
-        Vector3 targetPos = new Vector3(groundDirection.magnitude, direction.y, 0);
-        targetPos.z = 0;
-        float height = targetPos.y + targetPos.magnitude / 2f;
-        height = Mathf.Max(0.01f, height);
-        float angle;
-        float v0;
-        float time;
-        transform.Rotate(transform.rotation.x + 100, transform.rotation.y, transform.rotation.z);
-        CalculatePathWithHeight(targetPos, height, out v0, out angle, out time);
-        StopAllCoroutines();
-        StartCoroutine(Coroutine_Movement(groundDirection.normalized, v0, angle, time));
-        
-        
+
+        // Start at the start position
+        transform.position = _startPos;
+        _t = 0f;
+        _lifeTimer = 0f;
     }
+
     private void Update()
     {
-        //transform.LookAt(target_pos);
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(transform.position - target_pos),3* Time.deltaTime);
-        
-
-
-    }
-    private void CalculatePath(Vector3 targetPos,float angle,out float v0,out float time)
-    {
-        float xt = targetPos.x;
-        float yt = targetPos.y;
-        float g = -Physics.gravity.y;
-
-        float v1 = Mathf.Pow(xt, 2) * g;
-        float v2 = 2 * xt * Mathf.Sin(angle) * Mathf.Cos(angle);
-        float v3 = 2 * yt * Mathf.Pow(Mathf.Cos(angle), 2);
-        v0 = Mathf.Sqrt(v1 / (v2 - v3));
-        time = xt / (v0 * Mathf.Cos(angle));
-       
-    }
-
-    private float QuadraticEquation(float a, float b, float c, float sign)
-    {
-        return (-b + sign * Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a);
-    }
-    private void CalculatePathWithHeight(Vector3 targetPos,float h, out float v0, out float angle, out float time)
-    {
-        float xt = targetPos.x;
-        float yt = targetPos.y;
-        float g = -Physics.gravity.y;
-
-        float b = Mathf.Sqrt(2 * g * h);
-        float a = (-0.5f * g);
-        float c = -yt;
-
-        float tplus = QuadraticEquation(a, b, c, 1);
-        float tmin = QuadraticEquation(a, b, c, -1);
-        time = tplus > tmin ? tplus : tmin;
-        time_update = time;
-        angle = Mathf.Atan(b * time / xt);
-
-        v0 = b / Mathf.Sin(angle);
-    }
-    IEnumerator Coroutine_Movement(Vector3 direction,float v0,float angle,float time)
-    {
-        float t = 0; // time
-        while (t < time)
+        // Lifetime / safety destroy
+        _lifeTimer += Time.deltaTime;
+        if (_lifeTimer >= maxLifetime)
         {
-            float x = v0 * t * Mathf.Cos(angle);
-            float y = v0 * t * Mathf.Sin(angle) - (1f / 2f) * -Physics.gravity.y * Mathf.Pow(t, 2f);
-            transform.position = _FirePoint.position + direction * x + Vector3.up * y;
-            t += Time.deltaTime;
-            yield return null;
+            Destroy(gameObject);
+            return;
         }
+
+        // Advance along the normalized time 0 → 1
+        if (flightDuration <= 0.0001f)
+            flightDuration = 0.0001f;
+
+        _t += Time.deltaTime / flightDuration;
+        _t = Mathf.Clamp01(_t);
+
+        // Base straight-line interpolation
+        Vector3 straightPos = Vector3.Lerp(_startPos, _targetPos, _t);
+
+        // Add a vertical parabolic offset: 4 * h * t * (1 - t)
+        float heightOffset = 4f * arcHeight * _t * (1f - _t);
+        Vector3 curvedPos = straightPos + Vector3.up * heightOffset;
+
+        // Compute velocity direction for orientation before moving
+        Vector3 velocity = curvedPos - transform.position;
+
+        transform.position = curvedPos;
+
+        if (velocity.sqrMagnitude > 0.0001f)
+        {
+            transform.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
+        }
+
+        // If we've essentially reached the end of the path and haven't hit anything, 
+        // let the lifetime timer handle cleanup.
     }
-   
 }
