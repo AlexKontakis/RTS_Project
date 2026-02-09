@@ -10,6 +10,8 @@ public class cam_manager : MonoBehaviour
     private RaycastHit hit;
     public Camera cam2;
     public bool freeze_zoom;
+    public float test = 0;
+
     private void Start()
     {
         freeze_zoom = false;
@@ -23,14 +25,15 @@ public class cam_manager : MonoBehaviour
         Ray ray = Camera.main.ViewportPointToRay(rayOrigin);
         if (Physics.Raycast(ray, out hit))
         {
-            if ((transform.position - hit.point).magnitude <= 40)
+            test = (transform.position - hit.point).magnitude;
+            /*if ((transform.position - hit.point).magnitude <= 40)
             {
                 freeze_zoom = true;
             }
             else
             {
                 freeze_zoom = false;
-            }
+            }*/
         }
 
 
@@ -54,13 +57,13 @@ public class cam_manager : MonoBehaviour
         }
         if ((Input.GetAxis("Mouse ScrollWheel") > 0f) && freeze_zoom == false)//zoom in
         {
-            pos.y -= 2;
-            pos.x += 2;
+            pos.y -= 20;
+            pos.x += 20;
         }
         if ((Input.GetAxis("Mouse ScrollWheel") < 0f))//zoom out
         {
-            pos.y += 2;
-            pos.x -= 2;
+            pos.y += 20;
+            pos.x -= 20;
         }
 
 

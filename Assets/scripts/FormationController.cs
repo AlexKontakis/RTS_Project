@@ -65,16 +65,16 @@ public class FormationController : MonoBehaviour
         switch (type)
         {
             case FormationType.BoxLoose:
-                ApplyBoxFormation(ranged, melee, center, 2.5f);
+                ApplyBoxFormation(ranged, melee, center, 20f);      
                 break;
             case FormationType.BoxTight:
-                ApplyBoxFormation(ranged, melee, center, 1.2f);
+                ApplyBoxFormation(ranged, melee, center, 10f);       
                 break;
             case FormationType.CircleLoose:
-                ApplyCircleFormation(ranged, melee, center, 3.0f, 2.5f);
+                ApplyCircleFormation(ranged, melee, center, 24f, 20f); 
                 break;
             case FormationType.CircleTight:
-                ApplyCircleFormation(ranged, melee, center, 1.75f, 1.5f);
+                ApplyCircleFormation(ranged, melee, center, 14f, 12f);   
                 break;
         }
     }
@@ -93,16 +93,16 @@ public class FormationController : MonoBehaviour
         switch (currentFormationType)
         {
             case FormationType.BoxLoose:
-                ApplyBoxFormation(ranged, melee, center, 2.5f);
+                ApplyBoxFormation(ranged, melee, center, 20f);
                 break;
             case FormationType.BoxTight:
-                ApplyBoxFormation(ranged, melee, center, 1.2f);
+                ApplyBoxFormation(ranged, melee, center, 10f);
                 break;
             case FormationType.CircleLoose:
-                ApplyCircleFormation(ranged, melee, center, 3.0f, 2.5f);
+                ApplyCircleFormation(ranged, melee, center, 24f, 20f);
                 break;
             case FormationType.CircleTight:
-                ApplyCircleFormation(ranged, melee, center, 1.75f, 1.5f);
+                ApplyCircleFormation(ranged, melee, center, 14f, 12f);
                 break;
         }
     }
@@ -132,28 +132,7 @@ public class FormationController : MonoBehaviour
             selectionCenter += go.transform.position;
             centerCount++;
 
-            bool isRanged = false;
-
-            // Check in friendly and enemy ranged lists
-            for (int i = 0; i < um.FRU.Count; i++)
-            {
-                if (props.type == um.FRU[i])
-                {
-                    isRanged = true;
-                    break;
-                }
-            }
-            if (!isRanged)
-            {
-                for (int i = 0; i < um.ERU.Count; i++)
-                {
-                    if (props.type == um.ERU[i])
-                    {
-                        isRanged = true;
-                        break;
-                    }
-                }
-            }
+            bool isRanged = um.FRUSet.Contains(props.type) || um.ERUSet.Contains(props.type);
 
             if (isRanged)
                 ranged.Add(go);

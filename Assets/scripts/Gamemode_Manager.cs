@@ -19,29 +19,40 @@ public class Gamemode_Manager : MonoBehaviour
     public List<GameObject> spawners = new List<GameObject>();
     public GameObject defeat;
     public int Otp = 0;
+    public int spawnersCount = 0;
+    public int test = 0;
+    public Objective_Tracker ot;
 
+    public int enemyCount;
     public Scene currentScene;
-
+    public bool flag = false;
     public int Sspears, Sarchers;//temp number of all surviving unit types in order for the coresponding static values to be updated and then given to the next scene
 
     void Start()
     {
-        defeat.SetActive(false);
+        
+        Gamemode = "Dungeon";
+        
+       
+    }
+    
+   
+
+    void Update()
+    {
+       if(flag == false){
+        //defeat.SetActive(false);
         currentScene = SceneManager.GetActiveScene();
         Otp = 0;
         loseTimer = 0;
         Sarchers = 0;
         Sspears = 0;
-        foreach (var s in FindObjectsOfType<spawner>())
-        {
-            spawn = s.gameObject;
+        foreach (var s in FindObjectsOfType<Objective_Tracker>()){
+            ot = s;
         }
-        foreach (var s in FindObjectsOfType<Triggered_Script>())
+        foreach (var s in FindObjectsOfType<CapsuleCollider>())
         {
-            spawners.Add(s.gameObject);
-        }
-        foreach(var s in FindObjectsOfType<CapsuleCollider>())
-        {
+            
             if (s.CompareTag("Finish"))
             {
                 Capture_point = s.gameObject;
@@ -61,26 +72,24 @@ public class Gamemode_Manager : MonoBehaviour
         {
             um = s;
         }
-    }
-
-    void Update()
-    {
+        foreach(var s in FindObjectsOfType<spawner>()){
+            spawners.Add(s.gameObject);
+        }
+        flag = true;
+       }
         //Siege//
-        if (currentScene.buildIndex == 1)
-        {
-            
-            if (Gamemode == "Siege")
+       if (Gamemode == "Siege")
             {
-                if(Base.GetComponent<unit_properties>().HP <= 0)
+                if(Base != null && Base.GetComponent<unit_properties>() != null && Base.GetComponent<unit_properties>().HP <= 0)
                 {
                     Lose = true;
                 }
-                if (um.Friendlies_alive.Count > 0)
+                if (um != null && um.Friendlies_alive != null && um.Friendlies_alive.Count > 0 && Capture_point != null)
                 {
                     int units_in = 0;
                     for (int i = 0; i < um.Friendlies_alive.Count; i++)
                     {
-                        if ((um.Friendlies_alive[i].transform.position - Capture_point.transform.position).magnitude <= 10)
+                        if (um.Friendlies_alive[i] != null && (um.Friendlies_alive[i].transform.position - Capture_point.transform.position).magnitude <= 10)
                         {
                             units_in++;
                         }
@@ -101,8 +110,14 @@ public class Gamemode_Manager : MonoBehaviour
                     Timer += Time.deltaTime;
                     if (Timer >= 10)
                     {
-
-                        Capture_point.GetComponent<MeshRenderer>().material = green;
+                        if (Capture_point != null)
+                        {
+                            var renderer = Capture_point.GetComponent<MeshRenderer>();
+                            if (renderer != null)
+                            {
+                                renderer.material = green;
+                            }
+                        }
                         Win = true;
                     }
                 }
@@ -111,7 +126,10 @@ public class Gamemode_Manager : MonoBehaviour
                     if(Otp == 0)
                     {
                         Otp = 1;
-                        um.Available_Units();
+                        if (um != null)
+                        {
+                            um.Available_Units();
+                        }
                     }
                     defeat.SetActive(true);
                     loseTimer += Time.deltaTime;
@@ -127,31 +145,39 @@ public class Gamemode_Manager : MonoBehaviour
                     if (Otp == 0)
                     {
                         Otp = 1;
-                        um.Available_Units();
+                        if (um != null)
+                        {
+                            um.Available_Units();
+                        }
                     }
 
                     Town_Manager.victory = true;
-                    Exit.gameObject.SetActive(true);
+                    if (Exit != null)
+                    {
+                        Exit.gameObject.SetActive(true);
+                    }
                 }
             }
-        }//Dungeon//
-        else if (currentScene.buildIndex == 2)
+        //Dungeon//
+       if (Gamemode == "Dungeon")
         {
             
-            if (Gamemode == "Dungeon")
+           if(ot.Objective1 == true && ot.Objective2 == true && ot.Objective3 == true && ot.Objective4 == true){
+                Win = true;
+        
+           }
+            
+            if (Win == true)
             {
-                if (spawners.Count == 0 && Boss.GetComponent<unit_properties>().HP <= 0)
+                Dungeon_manager.victory = true;
+                if (Exit != null)
                 {
-                    Win = true;
-                }
-
-                if (Win == true)
-                {
-                    Dungeon_manager.victory = true;
                     Exit.gameObject.SetActive(true);
                 }
             }
         }
+           
+        
        
        
 

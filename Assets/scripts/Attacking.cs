@@ -16,8 +16,13 @@ public class Attacking : MonoBehaviour
     public int attack_count;
     public Breach_order bo;
 
+    public Objective_Tracker ot;
+
 
     public int t=0;
+
+    private unit_properties props;
+    public bool isRanged;
 
    
     
@@ -26,18 +31,34 @@ public class Attacking : MonoBehaviour
     void Start()
     {
         attack_count = 0;
-        foreach (var s in FindObjectsOfType<unit_manager>())
+        // Cache references instead of searching every frame
+        var umInstance = FindObjectOfType<unit_manager>();
+        if (umInstance != null)
         {
-            um = s.gameObject.GetComponent<unit_manager>();
-            bo = s.gameObject.GetComponent<Breach_order>();
+            um = umInstance;
+            bo = umInstance.GetComponent<Breach_order>();
         }
         provoked = false;
         attacking = false;
-        agent = transform.gameObject.GetComponent<NavMeshAgent>();
-        atk_spd = transform.gameObject.GetComponent<unit_properties>().ATK_SPD;
-        range = transform.gameObject.GetComponent<unit_properties>().RANGE;
-        atk_range = transform.gameObject.GetComponent<unit_properties>().ATK_RANGE;
-        atk_dmg = transform.gameObject.GetComponent<unit_properties>().ATK;
+        agent = GetComponent<NavMeshAgent>();
+        props = GetComponent<unit_properties>();
+        if (props != null)
+        {
+            atk_spd = props.ATK_SPD;
+            range = props.RANGE;
+            atk_range = props.ATK_RANGE;
+            atk_dmg = props.ATK;
+        }
+        var otInstance = FindObjectOfType<Objective_Tracker>();
+        if(otInstance != null){
+            ot = otInstance;
+        }
+
+        /* Precompute whether this unit is ranged based on type lists
+        if (um != null && props != null)
+        {
+            isRanged = um.FRUSet.Contains(props.type) || um.ERUSet.Contains(props.type);
+        }*/
     }
 
 
@@ -48,7 +69,7 @@ public class Attacking : MonoBehaviour
 
        
 
-        if (transform.GetComponent<unit_properties>().faction == "Enemy")
+        if (props != null && props.faction == "Enemy")
         {
             if(um.Friendlies_alive.Count > 0)
             {
@@ -65,7 +86,7 @@ public class Attacking : MonoBehaviour
                 }
             }
         }
-        else if (transform.GetComponent<unit_properties>().faction == "Friendly")
+        else if (props != null && props.faction == "Friendly")
         {
           if(breach == false)
             {
@@ -114,7 +135,7 @@ public class Attacking : MonoBehaviour
                 provoked = true;
                 
                 //enemies prioritize units over flag//
-                if(transform.GetComponent<unit_properties>().faction == "Enemy")
+                if(props != null && props.faction == "Enemy")
                 {
                     if(targets.Count > 1)
                     {
@@ -170,28 +191,20 @@ public class Attacking : MonoBehaviour
             ctarget = targets[0];
             if (provoked == true)
             {
-                if (transform.GetComponent<unit_properties>().type != "Obstacle")
+                if (props != null && props.type != "Obstacle")
                 {
                     if(ctarget.GetComponent<unit_properties>().HP <= 0)
                     {
                         targets.Remove(ctarget);
                     }
                     
-                    if (transform.GetComponent<unit_properties>().faction  == "Enemy")
+                    if (props.faction  == "Enemy")
                     {
                         if (targets.Count > 0)
                         {
-                            bool g = false;
                             transform.LookAt(targets[0].transform.position);
-                            
-                            for (int i = 0; i < um.ERU.Count; i++)
-                            {
-                                if (transform.gameObject.GetComponent<unit_properties>().type == um.ERU[i])
-                                {
-                                    g = true;
-                                }
-                            }
-                            if (g == true)
+
+                            if (isRanged)
                             {
                                 if (transform.GetComponent<Archer_fire>().is_firing == true)
                                 {
@@ -218,16 +231,8 @@ public class Attacking : MonoBehaviour
                             if (targets.Count > 0)
                             {
                                 transform.LookAt(targets[0].transform.position);
-                                bool b = false;
-                                for (int i = 0; i < um.FMU.Count; i++)
-                                {
-                                    if (transform.gameObject.GetComponent<unit_properties>().type == um.FRU[i])
-                                    {
-                                        b = true;
-                                    }
-                                }
-                                
-                                if (b == true)
+
+                                if (isRanged)
                                 {
                                     if (transform.GetComponent<Archer_fire>().is_firing == true)
                                     {
@@ -259,23 +264,9 @@ public class Attacking : MonoBehaviour
         //attacking//
         if (ctarget != null)
         {
-            bool g = false;
-            for (int i = 0; i < um.FRU.Count; i++)
+            if (isRanged)
             {
-                if (transform.gameObject.GetComponent<unit_properties>().type == um.FRU[i])
-                {
-                    g = true;
-                }
-            }
-            for (int i = 0; i < um.ERU.Count; i++)
-            {
-                if (transform.gameObject.GetComponent<unit_properties>().type == um.ERU[i])
-                {
-                    g = true;
-                }
-            }
-            if (g == true)
-            {
+                
                 transform.gameObject.GetComponent<Archer_fire>().is_firing = true;
 
             }
@@ -368,15 +359,7 @@ public class Attacking : MonoBehaviour
         {
             if (targets.Count == 0 && breach == false)
             {
-                bool g = false;
-                for (int i = 0; i < um.FRU.Count; i++)
-                {
-                    if (transform.gameObject.GetComponent<unit_properties>().type == um.FRU[i])
-                    {
-                        g = true;
-                    }
-                }
-                if (g == true)
+                if (isRanged)
                 {
                     transform.gameObject.GetComponent<Archer_fire>().is_firing = false;
                 }
@@ -391,18 +374,21 @@ public class Attacking : MonoBehaviour
 
     void Add(GameObject target, bool flag)
     {
-        for (int i = 0; i < targets.Count; i++)
-        {
-            if (target == targets[i])
-            {
-                flag = true;
-            }
-        }
-        if (flag == false)
-        {
-            targets.Add(target);
-        }
         flag = false;
+        if(target != ot.CaptureObj){
+            for (int i = 0; i < targets.Count; i++)
+            {
+                if (target == targets[i])
+                {
+                    flag = true;
+                }
+            }
+            if (flag == false)
+            {
+                targets.Add(target);
+            }
+            flag = false;
+        }
     }
     
 }

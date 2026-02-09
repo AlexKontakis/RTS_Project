@@ -22,6 +22,7 @@ public class Dungeon_manager : MonoBehaviour
     public static int dungeonid;
     public static bool victory;
     public static Vector3 dungeon;
+    public int distanceTillArrive;
 
     //test//
     public bool v;
@@ -72,7 +73,7 @@ public class Dungeon_manager : MonoBehaviour
                 
                 for(int j = 0; j < um.us.Count; j++)
                 {
-                    if((um.us[j].transform.position - Dungeons[i].transform.position).magnitude <= 10)
+                    if((um.us[j].transform.position - Dungeons[i].transform.position).magnitude <= distanceTillArrive)
                     {
                         arrived = true;
                         cDungeon = Dungeons[i];

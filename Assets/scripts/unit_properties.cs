@@ -12,6 +12,7 @@ public class unit_properties : MonoBehaviour
     public Material dead,healthy,half,low;
     public float timer,healthper,HPS,temp;
     public unit_manager um;
+    public string IsObjectiveOf;
 
     public Vector3 test;
 
@@ -65,14 +66,7 @@ public class unit_properties : MonoBehaviour
         
         
         //
-        for(int i = 0; i < um.FRU.Count; i++)
-        {
-            if(type == um.FRU[i])
-            {
-                g = true;
-               
-            }
-        }
+        g = um.FRUSet.Contains(type);
         if(g == true)
         {
             if (ordered == false && transform.GetComponent<Archer_fire>().is_firing == true)
@@ -161,6 +155,9 @@ public class unit_properties : MonoBehaviour
                 if(faction == "Enemy")
                 {
                     um.Enemies_alive.Remove(transform.gameObject);
+                    GetComponent<NavMeshAgent>().SetDestination(transform.position);
+                    //GetComponent<NavMeshAgent>().enabled = false;
+
                 }
                 else
                 {

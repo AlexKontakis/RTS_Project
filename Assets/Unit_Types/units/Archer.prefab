@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 1.8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3951321720583605202}
@@ -130,8 +130,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 10
+  m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -156,11 +156,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HP: 100
   MAX_HP: 100
-  SPD: 10
+  SPD: 30
   ATK: 0
   ATK_SPD: 0
-  RANGE: 90
-  ATK_RANGE: 100
+  RANGE: 200
+  ATK_RANGE: 180
   ordered: 0
   Spawned: 0
   flag: 0
@@ -231,6 +231,7 @@ MonoBehaviour:
   attack_count: 0
   bo: {fileID: 0}
   t: 0
+  isRanged: 1
 --- !u!1001 &1395617551122582489
 PrefabInstance:
   m_ObjectHideFlags: 0

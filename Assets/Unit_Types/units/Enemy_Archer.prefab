@@ -30,14 +30,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4316471404034234776}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -35.684143, y: 1.5, z: -10.5946}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1123926908348662007}
   - {fileID: 913139918640518407}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4316471404034234780
 MeshFilter:
@@ -58,11 +59,17 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -84,9 +91,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &4316471404034234782
 CapsuleCollider:
@@ -96,8 +105,17 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4316471404034234776}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
+  serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -138,14 +156,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HP: 100
   MAX_HP: 100
-  SPD: 10
+  SPD: 30
   ATK: 0
   ATK_SPD: 0
-  RANGE: 50
-  ATK_RANGE: 40
+  RANGE: 200
+  ATK_RANGE: 180
   ordered: 0
+  Spawned: 0
   flag: 0
   active: 0
+  boss: 0
   faction: Enemy
   type: Raider_Ranged
   highlight: {fileID: 0}
@@ -160,6 +180,7 @@ MonoBehaviour:
   HPS: 0
   temp: 0
   um: {fileID: 0}
+  test: {x: 0, y: 0, z: 0}
   hpbs: {x: 0, y: 0, z: 0}
 --- !u!114 &4593118629902496938
 MonoBehaviour:
@@ -198,17 +219,25 @@ MonoBehaviour:
   listed_self: {fileID: 0}
   attacking: 0
   provoked: 0
+  breach: 0
+  breach_target: {fileID: 0}
+  temp: {fileID: 0}
   timer: 0
   atk_spd: 0
   range: 0
   atk_range: 0
   atk_dmg: 0
   um: {fileID: 0}
+  attack_count: 0
+  bo: {fileID: 0}
+  t: 0
+  isRanged: 0
 --- !u!1001 &1077238481160866202
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4316471404034234781}
     m_Modifications:
     - target: {fileID: 170856805230288029, guid: 4be5855ab6904c24ba7633894622a5f5, type: 3}
@@ -260,6 +289,9 @@ PrefabInstance:
       value: HP bar
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4be5855ab6904c24ba7633894622a5f5, type: 3}
 --- !u!1 &39290207816804651 stripped
 GameObject:
@@ -276,6 +308,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4316471404034234781}
     m_Modifications:
     - target: {fileID: 2705485729376337931, guid: fe4503f4fd1dd47449a54135628209d7, type: 3}
@@ -339,6 +372,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe4503f4fd1dd47449a54135628209d7, type: 3}
 --- !u!4 &1123926908348662007 stripped
 Transform:

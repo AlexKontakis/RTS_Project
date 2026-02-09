@@ -56,9 +56,10 @@ public class ArrowProjectile : MonoBehaviour
         {
             // Ensure there is always a rigidbody so physics events will fire
             _rb = gameObject.AddComponent<Rigidbody>();
+           
         }
 
-        // We will move the projectile manually.
+        // We will move the projectile manually. Must be kinematic so physics doesn't override our position.
         _rb.useGravity = false;
         _rb.isKinematic = false;
     }
@@ -88,6 +89,7 @@ public class ArrowProjectile : MonoBehaviour
 
     private void Update()
     {
+        
         if (_hasHit)
             return;
 
@@ -167,8 +169,7 @@ public class ArrowProjectile : MonoBehaviour
     {
         _hasHit = true;
 
-        // Stop movement
-        enabled = false;
+        
 
         if (_rb != null)
         {

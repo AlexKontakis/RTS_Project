@@ -24,6 +24,10 @@ public class unit_manager : MonoBehaviour
     public List<string> ERU = new List<string>();//enemy ranged unit list
     public List<string> FRU = new List<string>();//friendly ranged unit list
 
+    // Optimized lookup sets for unit type categories
+    public HashSet<string> FRUSet = new HashSet<string>();
+    public HashSet<string> ERUSet = new HashSet<string>();
+
     public List<GameObject> spawnList = new List<GameObject>();//list of all spawners for instantiation of units at startup
 
     public GameObject spawn;
@@ -208,6 +212,12 @@ public class unit_manager : MonoBehaviour
         FMU = File.ReadAllLines(F_path).ToList();
         F_path = Path.Combine(Application.dataPath, "Unit_Types", "Ranged_FUnits.txt");
         FRU = File.ReadAllLines(F_path).ToList();
+        // Build fast-lookup sets for ranged unit types
+        FRUSet.Clear();
+        foreach (var t in FRU)
+        {
+            FRUSet.Add(t);
+        }
         foreach (var s in FindObjectsOfType<NavMeshAgent>())
         {
             GameObject p = s.gameObject;
@@ -226,6 +236,11 @@ public class unit_manager : MonoBehaviour
         EMU = File.ReadAllLines(E_path).ToList();
         E_path = Path.Combine(Application.dataPath, "Unit_Types", "Ranged_EUnits.txt");
         ERU = File.ReadAllLines(E_path).ToList();
+        ERUSet.Clear();
+        foreach (var t in ERU)
+        {
+            ERUSet.Add(t);
+        }
         foreach (var s in FindObjectsOfType<NavMeshAgent>())
         {
             GameObject p = s.gameObject;
@@ -253,6 +268,7 @@ public class unit_manager : MonoBehaviour
 
     void Update()
     {
+        
         //test//
         s = Spearmen;
         //test//
@@ -395,7 +411,7 @@ public class unit_manager : MonoBehaviour
                         {
                             formationController.ApplyCurrentFormationAt(hit2.point);
                         }
-                        else
+                        /*else
                         {
                             // Fallback to legacy per-index formation if controller is missing
                             for (int i = 0; i < us.Count; i++)
@@ -404,7 +420,7 @@ public class unit_manager : MonoBehaviour
                                 un_count++;
                             }
                             un_count = 0;
-                        }
+                        }*/
                     }
                 }
             }
