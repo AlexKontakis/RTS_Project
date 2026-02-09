@@ -245,11 +245,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HP: 300
   MAX_HP: 300
-  SPD: 20
+  SPD: 30
   ATK: 20
   ATK_SPD: 4
   RANGE: 200
-  ATK_RANGE: 10
+  ATK_RANGE: 20
   ordered: 0
   Spawned: 0
   flag: 0

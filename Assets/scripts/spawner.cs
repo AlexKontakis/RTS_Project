@@ -19,6 +19,7 @@ public class spawner : MonoBehaviour
     public GameObject Destination;
     public int Waves;
     public float TimeBetweenWaves;
+    public bool Active = false;
 
     void Start()
     {
@@ -33,7 +34,7 @@ public class spawner : MonoBehaviour
 
     void Update()
     {
-        if(SubType == "Proximity")
+        if(SubType == "Proximity" && Active == true)
         {
             if(um.Friendlies_alive.Count > 0)
             {
@@ -56,7 +57,7 @@ public class spawner : MonoBehaviour
                 }
             }
         }
-        if(SubType == "Waves" && near == true){
+        if(SubType == "Waves" && Active == true){
             timer += Time.deltaTime;
             if(Waves >= 0 && timer >= TimeBetweenWaves){
                 timer = 0;

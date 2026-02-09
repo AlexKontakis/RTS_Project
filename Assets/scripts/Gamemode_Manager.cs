@@ -27,11 +27,13 @@ public class Gamemode_Manager : MonoBehaviour
     public Scene currentScene;
     public bool flag = false;
     public int Sspears, Sarchers;//temp number of all surviving unit types in order for the coresponding static values to be updated and then given to the next scene
+    public string Game_mode;
+
 
     void Start()
     {
         
-        Gamemode = "Dungeon";
+        
         
        
     }
@@ -47,6 +49,9 @@ public class Gamemode_Manager : MonoBehaviour
         loseTimer = 0;
         Sarchers = 0;
         Sspears = 0;
+        if(currentScene.buildIndex == 0){
+            Gamemode = "World_Map";
+        }
         foreach (var s in FindObjectsOfType<Objective_Tracker>()){
             ot = s;
         }

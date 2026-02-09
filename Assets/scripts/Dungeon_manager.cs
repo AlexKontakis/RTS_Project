@@ -127,6 +127,7 @@ public class Dungeon_manager : MonoBehaviour
         dungeonid = cDungeon.GetComponent<Dungeon_properties>().identification;
         victory = false;
         Gamemode_Manager.Gamemode = "Dungeon";
+        gm.Game_mode = "Dungeon";
         SceneManager.LoadScene(sceneBuildIndex: 2);
     }
 

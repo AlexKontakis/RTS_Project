@@ -180,6 +180,7 @@ MonoBehaviour:
   HPS: 0
   temp: 0
   um: {fileID: 0}
+  IsObjectiveOf: 
   test: {x: 0, y: 0, z: 0}
   hpbs: {x: 0, y: 0, z: 0}
 --- !u!114 &4593118629902496938
@@ -230,8 +231,9 @@ MonoBehaviour:
   um: {fileID: 0}
   attack_count: 0
   bo: {fileID: 0}
+  ot: {fileID: 0}
   t: 0
-  isRanged: 0
+  isRanged: 1
 --- !u!1001 &1077238481160866202
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -36,6 +36,9 @@ public class toggle_cam_controller : MonoBehaviour
             Resource_Manager.Food += 500;
             Resource_Manager.Materials += 500;
         }
+        if(Input.GetKeyDown(KeyCode.A)){
+            unit_manager.Spearmen += 1;
+        }
         
     }
 }

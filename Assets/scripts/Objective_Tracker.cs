@@ -12,6 +12,7 @@ public class Objective_Tracker : MonoBehaviour
     public Gamemode_Manager gm;
     public int Obj1SpawnerCount,Obj1EnemiesCount;
     public int Obj3SpawnerCount,Obj3EnemiesCount;
+    public int Obj4SpawnerCount,Obj4EnemiesCount;
     public float timer = 0;
     public GameObject CaptureObj;
     public float CaptureRadius;
@@ -47,19 +48,18 @@ public class Objective_Tracker : MonoBehaviour
                 for(int i = 0; i < gm.spawners.Count; i++)
                 {
                     if(gm.spawners[i].GetComponent<spawner>().Type == "Objective1"){
+                        gm.spawners[i].GetComponent<spawner>().Active = true;
                         Obj1SpawnerCount++;
                     }
-                }
-                if(um.Enemies_alive.Count > 0)
-                {
-                    for(int i = 0; i < um.Enemies_alive.Count; i++){
-                        if(um.Enemies_alive[i].GetComponent<unit_properties>().boss == false && um.Enemies_alive[i] != CaptureObj){
-                            Obj1EnemiesCount++;
-                        }
+                } 
+            }
+            if(um.Enemies_alive.Count > 0)
+            {
+                for(int i = 0; i < um.Enemies_alive.Count; i++){
+                    if(um.Enemies_alive[i].GetComponent<unit_properties>().boss == false && um.Enemies_alive[i] != CaptureObj){
+                        Obj1EnemiesCount++;
                     }
                 }
-                
-                
             }
             if(Obj1SpawnerCount == 0 && Obj1EnemiesCount == 0 && um.Friendlies_alive.Count > 0){
                 Objective1 = true;
@@ -160,7 +160,7 @@ public class Objective_Tracker : MonoBehaviour
                     for(int i = 0; i < gm.spawners.Count; i++)
                     {
                         if(gm.spawners[i].GetComponent<spawner>().Type == "Objective3"){
-                            gm.spawners[i].GetComponent<spawner>().near = true;
+                            gm.spawners[i].GetComponent<spawner>().Active = true;
                             Obj3SpawnerCount++;
                         }
                     }
@@ -184,6 +184,41 @@ public class Objective_Tracker : MonoBehaviour
                 
             }
             //Objective 4
+            if(Objective1 == true && Objective2 == true && Objective3 == true){
+
+                Obj4SpawnerCount = 0;
+                Obj4EnemiesCount = 0;
+                if(gm.spawners.Count > 0){
+                    for(int i = 0; i < gm.spawners.Count; i++)
+                    {
+                        if(gm.spawners[i].GetComponent<spawner>().Type == "Objective4"){
+                            gm.spawners[i].GetComponent<spawner>().Active = true;
+                            Obj4SpawnerCount++;
+                        }
+                    }
+                    if(um.Enemies_alive.Count > 0)
+                    {
+                        for(int i = 0; i < um.Enemies_alive.Count; i++){
+                            if(um.Enemies_alive[i] != CaptureObj){
+                                Obj4EnemiesCount++;
+                            }
+                        }
+                    }
+                    
+                    
+                }
+                if(um.Enemies_alive.Count > 0)
+                {
+                    for(int i = 0; i < um.Enemies_alive.Count; i++){
+                        if(um.Enemies_alive[i] != CaptureObj){
+                            Obj4EnemiesCount++;
+                        }
+                    }
+                }
+                if(Obj4SpawnerCount == 0 && Obj4EnemiesCount == 0){
+                    Objective4 = true;
+                }
+            }
         }//TBA
         else if (Scenario == 2){
 

@@ -67,6 +67,7 @@ public class unit_manager : MonoBehaviour
 
     public GameObject Spear_Pref;//prefabs
     public GameObject Archer_Pref;
+    public GameObject Commander_Pref;
 
     // Formation control
     public FormationController formationController;
@@ -134,24 +135,11 @@ public class unit_manager : MonoBehaviour
             {
                 if (Town_Manager.victory == true)
                 {
-
-
-
-                    for (int i = 0; i < Spearmen; i++)
-                    {
-                        GameObject Unit = Instantiate(Spear_Pref, Town_Manager.Town, transform.rotation);
-                        Formation(i, Town_Manager.Town, Unit.GetComponent<NavMeshAgent>());
-                    }
-
-
+                    GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
                 }
                 else if (Dungeon_manager.victory == true)
                 {
-                    for (int i = 0; i < Spearmen; i++)
-                    {
-                        GameObject Unit = Instantiate(Spear_Pref, Dungeon_manager.dungeon, transform.rotation);
-                        Formation(i, Dungeon_manager.dungeon, Unit.GetComponent<NavMeshAgent>());
-                    }
+                    GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
                 }
             }
             else
@@ -171,24 +159,11 @@ public class unit_manager : MonoBehaviour
 
                 if (Town_Manager.victory == true)
                 {
-
-
-
-                    for (int i = 0; i < Archer; i++)
-                    {
-                        GameObject Unit = Instantiate(Archer_Pref, Town_Manager.Town, transform.rotation);
-                        Formation(i, Town_Manager.Town, Unit.GetComponent<NavMeshAgent>());
-                    }
-
-
+                    GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
                 }
                 else if (Dungeon_manager.victory == true)
                 {
-                    for (int i = 0; i < Archer; i++)
-                    {
-                        GameObject Unit = Instantiate(Archer_Pref, Dungeon_manager.dungeon, transform.rotation);
-                        Formation(i, Dungeon_manager.dungeon, Unit.GetComponent<NavMeshAgent>());
-                    }
+                    GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
                 }
             }
             else
@@ -269,9 +244,7 @@ public class unit_manager : MonoBehaviour
     void Update()
     {
         
-        //test//
-        s = Spearmen;
-        //test//
+       
         cur_unit_lim = Friendlies_alive.Count;
        //double click select all visible units of same type mechanic
        if(dcflag == true)
@@ -462,30 +435,33 @@ public class unit_manager : MonoBehaviour
     public void Available_Units()
     {
         //Setting how many units and what units the player has available//
-        int spears = 0; // spearmen
-        if (Friendlies_alive.Count > 0)
-        {
-            for (int i = 0; i < Friendlies_alive.Count; i++)
+        if(Gamemode_Manager.Gamemode != "World_Map"){
+            int spears = 0; // spearmen
+            if (Friendlies_alive.Count > 0)
             {
-                if (Friendlies_alive[i].GetComponent<unit_properties>().type == "Spearman")
+                for (int i = 0; i < Friendlies_alive.Count; i++)
                 {
-                    spears++;
+                    if (Friendlies_alive[i].GetComponent<unit_properties>().type == "Spearman")
+                    {
+                        spears++;
+                    }
                 }
             }
-        }
-        Spearmen = spears;
-        int archers = 0; //archers
-        if(Friendlies_alive.Count > 0)
-        {
-            for(int i = 0; i < Friendlies_alive.Count; i++)
+            Spearmen = spears;
+            int archers = 0; //archers
+            if(Friendlies_alive.Count > 0)
             {
-                if(Friendlies_alive[i].GetComponent<unit_properties>().type == "Archer")
+                for(int i = 0; i < Friendlies_alive.Count; i++)
                 {
-                    archers++;
+                    if(Friendlies_alive[i].GetComponent<unit_properties>().type == "Archer")
+                    {
+                        archers++;
+                    }
                 }
             }
+            Archer = archers;
         }
-        Archer = archers;
+       
     }
     void AddToList(GameObject obj, bool multiselect)
     {

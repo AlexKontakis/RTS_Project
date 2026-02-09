@@ -1,3 +1,4 @@
 Spearman
 Archer
 Obstacle
+Commander
