@@ -10,21 +10,25 @@ public class Button_Functionality : MonoBehaviour
     public Camera cam;
     Vector3 mp;
     private RaycastHit hit1, hit2;
-    public GameObject selected_building,panel;
+    public GameObject selected_building,panel,unit_panel,minimised_panel;
     
     public Button u1, u2;
     public TMP_Text T1, T2;
+
 
     public unit_manager um;
     
    
     void Start()
     {
-        panel.SetActive(false);
+        /*panel.SetActive(false);
         u1.gameObject.SetActive(false);
         u2.gameObject.SetActive(false);
         T1.gameObject.SetActive(false);
-        T2.gameObject.SetActive(false);
+        T2.gameObject.SetActive(false);*/
+        minimised_panel.SetActive(true);
+        unit_panel.SetActive(false);
+       
 
         foreach (var s in FindObjectsOfType<unit_manager>())
         {
@@ -89,7 +93,7 @@ public class Button_Functionality : MonoBehaviour
             T1.gameObject.SetActive(false);
             T2.gameObject.SetActive(false);
         }
-
+    
     }
 
     public void spawn()
@@ -105,5 +109,27 @@ public class Button_Functionality : MonoBehaviour
             }
         }
 
+    }
+
+    public void Spearman_spawn(){
+        
+        unit_manager.Spearmen++;
+    }
+
+    public void Archer_spawn(){
+        
+        unit_manager.Archer++;
+    }
+
+    public void Open_unit_panel()
+    {
+        minimised_panel.SetActive(false);
+        unit_panel.SetActive(true);
+    }
+
+    public void Close_unit_panel()
+    {
+        minimised_panel.SetActive(true);
+        unit_panel.SetActive(false);
     }
 }

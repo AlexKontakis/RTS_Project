@@ -37,7 +37,9 @@ public class toggle_cam_controller : MonoBehaviour
             Resource_Manager.Materials += 500;
         }
         if(Input.GetKeyDown(KeyCode.A)){
-            unit_manager.Spearmen += 1;
+            Debug.Log("Victory Status:" + Dungeon_manager.victory);
+            Debug.Log("Current Dungeon:" + Dungeon_manager.dungeonid);
+
         }
         
     }

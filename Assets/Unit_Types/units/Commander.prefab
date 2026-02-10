@@ -245,9 +245,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HP: 1000
   MAX_HP: 1000
-  SPD: 50
+  SPD: 30
   ATK: 20
-  ATK_SPD: 4
+  ATK_SPD: 6
   RANGE: 200
   ATK_RANGE: 20
   ordered: 0

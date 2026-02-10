@@ -10,6 +10,7 @@ public class Gamemode_Manager : MonoBehaviour
     public Material green;
     //test
     public static string Gamemode;
+    public static string Previous_Gamemode;
     public unit_manager um;
     public GameObject Capture_point,Base ,spawn, Boss;
     public float Timer, loseTimer;
@@ -27,7 +28,7 @@ public class Gamemode_Manager : MonoBehaviour
     public Scene currentScene;
     public bool flag = false;
     public int Sspears, Sarchers;//temp number of all surviving unit types in order for the coresponding static values to be updated and then given to the next scene
-    public string Game_mode;
+    
 
 
     void Start()
@@ -180,6 +181,26 @@ public class Gamemode_Manager : MonoBehaviour
                     Exit.gameObject.SetActive(true);
                 }
             }
+
+            if(Lose == true)
+            {
+                if(Otp == 0)
+                {
+                    Otp = 1;
+                    if (um != null)
+                    {
+                        um.Available_Units();
+                    }
+                }
+                defeat.SetActive(true);
+                loseTimer += Time.deltaTime;
+                if(loseTimer >= 5)
+                {
+                    Gamemode_Manager.Gamemode = "World_Map";
+                    SceneManager.LoadScene(sceneBuildIndex: 0);
+                }
+
+            }
         }
            
         
@@ -197,10 +218,11 @@ public class Gamemode_Manager : MonoBehaviour
         }
         else if(Gamemode == "Dungeon")
         {
+            Dungeon_manager.victory = true;
             Resource_Manager.Materials += Dungeon_manager.matReward;
         }
 
-
+        Gamemode_Manager.Previous_Gamemode = Gamemode_Manager.Gamemode;
         Gamemode_Manager.Gamemode = "World_Map";
         SceneManager.LoadScene(sceneBuildIndex: 0);
     }

@@ -15,6 +15,7 @@ public class UIAutoPosition : MonoBehaviour
     public RectTransform leftCorner;
     public RectTransform rightCorner;
     public RectTransform bottomMiddle;
+    public RectTransform bottomLeft;
 
     [Header("Offsets (in pixels)")]
     public Vector2 topOffset = new Vector2(20f, 20f);   // x from side, y from top
@@ -49,6 +50,15 @@ public class UIAutoPosition : MonoBehaviour
             rightCorner.anchorMax = new Vector2(1f, 1f);
             rightCorner.pivot = new Vector2(1f, 1f);
             rightCorner.anchoredPosition = new Vector2(-topOffset.x, -topOffset.y);
+        }
+
+        // Bottom-left
+        if (bottomLeft != null)
+        {
+            bottomLeft.anchorMin = new Vector2(0f, 0.2f);
+            bottomLeft.anchorMax = new Vector2(0f, 0.2f);
+            bottomLeft.pivot = new Vector2(0f, 1f);
+            bottomLeft.anchoredPosition = new Vector2(topOffset.x, -topOffset.y);
         }
 
         // Bottom-middle

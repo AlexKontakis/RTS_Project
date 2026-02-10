@@ -41,15 +41,7 @@ public class Town_Manager : MonoBehaviour
             AddToList(s.gameObject,y);
             y++;
         }
-        if(unit_manager.F == false)
-        {
-            y = 0;
-            foreach (var s in FindObjectsOfType<Town_Properties>())
-            {
-                Addstatics(s.gameObject,y);
-                y++;
-            }
-        }
+        
         
         foreach(var s in FindObjectsOfType<Gamemode_Manager>())
         {
@@ -116,6 +108,9 @@ public class Town_Manager : MonoBehaviour
                             Mill.gameObject.SetActive(false);
                         }
                     }
+                    else if(ctown.GetComponent<Town_Properties>().state == "Neutral"){
+
+                    }
                 }
                 else
                 {
@@ -157,22 +152,7 @@ public class Town_Manager : MonoBehaviour
         SceneManager.LoadScene(sceneBuildIndex: 1);
     }
 
-    void Addstatics(GameObject obj,int y)
-    {
-        bool flag2 = false;
-        for (int i = 0; i < T.Count; i++)
-        {
-            if (obj.GetComponent<Town_Properties>().identification == T[i].I)
-            {
-                flag2 = true;
-            }
-        }
-        if (flag2 == false)
-        {
-            T.Add(new Town_Properties(obj.GetComponent<Town_Properties>().state, obj.GetComponent<Town_Properties>().identification));
-          
-        }
-    }
+   
     void AddToList(GameObject obj,int y)
     {
        

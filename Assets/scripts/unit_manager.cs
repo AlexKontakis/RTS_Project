@@ -60,6 +60,7 @@ public class unit_manager : MonoBehaviour
     public Vector3 start_pos;
     public static bool F;
     public Gamemode_Manager gm;
+    public GameObject Commander;
 
     //test
     public bool test;
@@ -114,7 +115,11 @@ public class unit_manager : MonoBehaviour
                 spawn = s.gameObject;
             }
         }
-
+        foreach(var s in FindObjectsOfType<unit_properties>()){
+            if(s.gameObject.GetComponent<unit_properties>().type == "Commander"){
+                Commander = s.gameObject;
+            }
+        }
         foreach(var s in FindObjectsOfType<Town_Manager>())
         {
             tm = s;
@@ -128,29 +133,31 @@ public class unit_manager : MonoBehaviour
         {
             formationController = FindObjectOfType<FormationController>();
         }
-        if (Spearmen > 0)
+        if(transform.GetComponent<Town_Manager>() != null && transform.GetComponent<Dungeon_manager>() != null)
         {
+            if (Town_Manager.victory == true && Gamemode_Manager.Previous_Gamemode == "Siege")
+            {
+                Commander.transform.position = Town_Manager.Town;
+                //GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
+            }
+            else if (Dungeon_manager.victory == true && Gamemode_Manager.Previous_Gamemode == "Dungeon")
+            {
+                Commander.transform.position = Dungeon_manager.dungeon;
+                //GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
+            }
+        }
+        if (Spearmen > 0)
+        {   
             
-            if(transform.GetComponent<Town_Manager>() != null && transform.GetComponent<Dungeon_manager>() != null)
+            for (int i = 0; i < Spearmen; i++)
             {
-                if (Town_Manager.victory == true)
-                {
-                    GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
-                }
-                else if (Dungeon_manager.victory == true)
-                {
-                    GameObject Unit = Instantiate(Commander_Pref, Dungeon_manager.dungeon, transform.rotation);
-                }
+                GameObject Unit = Instantiate(Spear_Pref, spawn.transform.position, transform.rotation);
+                 
+                Formation(i, spawn.transform.position,Unit.GetComponent<NavMeshAgent>());
             }
-            else
-            {
-                for (int i = 0; i < Spearmen; i++)
-                {
-                    GameObject Unit = Instantiate(Spear_Pref, spawn.transform.position, transform.rotation);
-                     
-                    Formation(i, spawn.transform.position,Unit.GetComponent<NavMeshAgent>());
-                }
-            }
+            
+            
+            
         }
         if (Archer > 0)
         {

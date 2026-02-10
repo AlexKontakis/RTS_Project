@@ -29,6 +29,8 @@ public class Dungeon_manager : MonoBehaviour
     
     void Start()
     {
+        
+        
         int y = 0;
         arrived = false;
         flag = false;
@@ -41,19 +43,8 @@ public class Dungeon_manager : MonoBehaviour
             AddToList(s.gameObject, y);
             y++;
         }
-        if (unit_manager.F == false)
-        {
-            y = 0;
-            foreach (var s in FindObjectsOfType<Dungeon_properties>())
-            {
-                AddStatics(s.gameObject, y);
-                y++;
-            }
-        }
-        for (int i = 0; i < Dungeons.Count; i++)
-        {
-            Dungeons[i].GetComponent<Dungeon_properties>().identification = i;
-        }
+        
+       
         foreach(var s in FindObjectsOfType<Gamemode_Manager>())
         {
             gm = s;
@@ -63,7 +54,7 @@ public class Dungeon_manager : MonoBehaviour
     
     void Update()
     {
-        v = victory;
+        
         if (um.us.Count > 0)
         {
             
@@ -84,6 +75,7 @@ public class Dungeon_manager : MonoBehaviour
                 if(arrived == true)
                 {
                     Panel.gameObject.SetActive(true);
+                    dungeonid = cDungeon.GetComponent<Dungeon_properties>().identification;
                     if(cDungeon.GetComponent<Dungeon_properties>().clear == "Not Clear")
                     {
                         Reward.gameObject.SetActive(true);
@@ -109,13 +101,13 @@ public class Dungeon_manager : MonoBehaviour
             }
             if(victory == true)
             {
-                for(int i = 0; i < D.Count; i++)
+                Debug.Log("cDungeon:" + (cDungeon.GetComponent<Dungeon_properties>().identification));
+                Debug.Log("DungeonId"+ dungeonid);
+                Debug.Log("Condition: " + (cDungeon.GetComponent<Dungeon_properties>().identification == dungeonid));
+                if(cDungeon.GetComponent<Dungeon_properties>().identification == dungeonid)
                 {
-                    if(cDungeon.GetComponent<Dungeon_properties>().identification == D[i].I)
-                    {
-                        cDungeon.GetComponent<Dungeon_properties>().clear = "Clear";
-                        D[i].C = "Clear";
-                    }
+                    cDungeon.GetComponent<Dungeon_properties>().clear = "Clear";
+                    
                 }
                 victory = false;
             }
@@ -124,10 +116,10 @@ public class Dungeon_manager : MonoBehaviour
 
     public void EnterDungeon()
     {
-        dungeonid = cDungeon.GetComponent<Dungeon_properties>().identification;
+        
         victory = false;
         Gamemode_Manager.Gamemode = "Dungeon";
-        gm.Game_mode = "Dungeon";
+        
         SceneManager.LoadScene(sceneBuildIndex: 2);
     }
 
